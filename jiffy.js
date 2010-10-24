@@ -77,9 +77,9 @@ var Display = Sprite.extend({
 
         this.settings = new Base(defaults).extend(options);
         this.base(this.settings.width, this.settings.height);
-
         ele.parentNode.replaceChild(this.ctx.canvas, ele);
         this.timer.addListener('frame', this.onFrame);
+		this.display = this;
     },
 
     onFrame: function () {
@@ -91,6 +91,7 @@ var Display = Sprite.extend({
         this.ctx.save();
         this.ctx.translate(obj.x, obj.y);
         this.ctx.rotate(obj.angle);
+		//console.log(obj.ctx.canvas , -obj.width / 2, -obj.height / 2);
         this.ctx.drawImage(obj.ctx.canvas, -obj.width / 2, -obj.height / 2);
         for (var i = 0, e = obj.children.length; i < e; i++) {
             this.draw(obj.children[i]);
@@ -109,11 +110,11 @@ var Animation = Sprite.extend({
 
     constructor: function (imageurl, width, height, timer) {
         this.base(width, height);
+		this.timer = timer;
         this.onFrame = Function2.bind(this.onFrame, this);
         this.onAnimationLoaded = Function2.bind(this.onAnimationLoaded, this);
 
         this.image = document.createElement('img');
-
         this.image.addEventListener('load', this.onAnimationLoaded, false);
         this.image.setAttribute('src', imageurl);
     },
@@ -149,6 +150,7 @@ var Animation = Sprite.extend({
     },
 
     onAnimationLoaded: function () {
+		console.log('Animation loaded', this.image);
         this.frames = (this.image.width * this.image.height) / (this.width * this.height);
         this.start();
     },
@@ -216,10 +218,10 @@ var Physics = Base.extend({
     timer: null,
     body: null,
 
-    constructor: function (sprite, world, clock) {
+    constructor: function (sprite, world, timer) {
         this.sprite = sprite;
         this.world = world;
-        this.clock = clock;
+        this.timer = timer;
         this.onFrame = Function2.bind(this.onFrame, this);
 
         var bodyDef = new Box2D.Dynamics.b2BodyDef();
@@ -261,23 +263,25 @@ var FrameTimer = EventTarget.extend({
 
     settings: null,
     defaults: {
-        fps: 30
-    }
+        fps: 25
+    },
 
     constructor: function(options) {
         options = options || {};
-        this.settings = new Base(defaults).extend(options);
+        this.settings = new Base(this.defaults).extend(options);
     },
 
     start: function () {
-        var frame = 0;
+        var frame = 0,
+			that = this;
+			
         this._stats = window.setInterval(function () {
             console.log('FPS: ', frame);
             frame = 0;
         }, 1000);
 
         this._timer = window.setInterval(function () {
-            this.fire('frame');
+            that.fire('frame');
             frame++;
         }, 1000 / this.settings.fps);
     },
@@ -311,25 +315,4 @@ function test() {
     world.CreateBody(bodyDef).CreateFixture(fixDef);
     bodyDef.position.x = 14;
     world.CreateBody(bodyDef).CreateFixture(fixDef);
-
-    for (var i=0; i < 10; i++) {
-        var bb = new Animation("sphere.png", 64, 64);
-        bb.y = r(10) + 20;
-        bb.x = r(400);
-        var wr = new PhysicsWrapper(bb, world);
-        screen.root.add(wr);
-    }
-
-    var game = new Game(screen, world);
-    game.start();
-
-    document.body.addEventListener('click', function () {
-        game.pause();
-    }, false);
 }
-
-function r(max) {
-    return Math.floor(Math.random() * max);
-}
-
-window.setTimeout(test, 500);
