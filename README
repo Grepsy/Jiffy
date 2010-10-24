@@ -3,4 +3,4 @@ Jiffy - 2D game library based on canvas and box2D
 
 This library isn't ready to be used by anyone, but you're free to try.
 
-See demo.html for some examples.
+See demo-*.html for some examples.

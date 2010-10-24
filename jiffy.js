@@ -199,7 +199,7 @@ var World = Base.extend({
         this._debug.SetLineThickness(1.0);
         this._debug.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
         this._world.SetDebugDraw(debugDraw);
-        this._timer.addListener('frame', onFrame);
+        this._timer.addListener('frame', onFrameDebug);
     },
 
     onFrame: function () {
@@ -291,28 +291,3 @@ var FrameTimer = EventTarget.extend({
         window.clearInterval(this._stats);
     }
 });
-
-function test() {
-    var screen = new Display(document.getElementById('game'), { width: 400, height: 400 });
-
-    var fixDef = new b2FixtureDef();
-    fixDef.density = -0.2;
-    fixDef.friction = 0.6;
-    fixDef.restitution = 0.9;
-
-    var bodyDef = new b2BodyDef();
-    //create ground
-    bodyDef.type = b2Body.b2_staticBody;
-    bodyDef.position.x = 9;
-    bodyDef.position.y = 13;
-    fixDef.shape = new b2PolygonShape();
-    fixDef.shape.SetAsBox(10, 0.5);
-    world.CreateBody(bodyDef).CreateFixture(fixDef);
-    //walls
-    bodyDef.position.x = 0;
-    bodyDef.position.y = 15;
-    fixDef.shape.SetAsBox(0.5, 10);
-    world.CreateBody(bodyDef).CreateFixture(fixDef);
-    bodyDef.position.x = 14;
-    world.CreateBody(bodyDef).CreateFixture(fixDef);
-}
