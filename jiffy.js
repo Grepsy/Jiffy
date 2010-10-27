@@ -174,17 +174,11 @@ var World = Base.extend({
     _timer: null,
     _debug: null,
 
-    settings: null,
-    defaults: {
-        ratio: 30,
-        gravity: { x: 0, y: 0.8 }
-    },
-
-    constructor: function (timer, options) {
-        options = options || {};
-        this.settings = new Base(defaults).extend(options);
-
-        var gravity = new Box2D.Common.Math.b2Vec2(this.settings.gravity.x, this.settings.gravity.y);
+	ratio: 30,
+    gravity: { x: 0, y: 0.8 },
+    
+    constructor: function (timer, ratio, gravity) {
+        var gravity = new Box2D.Common.Math.b2Vec2(this.gravity.x, this.gravity.y);
         this._world = Box2D.Dynamics.b2World(gravity, true);
         this._timer = timer;
 
@@ -212,41 +206,45 @@ var World = Base.extend({
     }
 });
 
-var Physics = Base.extend({
-    sprite: null,
+var PSprite = Sprite.extend({
+	_b2body: null,
+	
     world: null,
-    timer: null,
-    body: null,
+	get x()    		        { return this._b2body.position.x * this.world.ratio - this.width / 2; },
+	set x(val) 		        { this._b2body.position.x = (val + this.width / 2) / this.world.ratio; },
+	get y()    		        { return this._b2body.position.y * this.world.ratio - this.width / 2; },
+	set y(val) 		        { this._b2body.position.y = (val + this.height / 2) / this.world.ratio; },
+	get angle() 	        { return this._b2body.angle; },
+	get density() 	        { return this._b2body.density; },
+	set density(val)        { this._b2body.density = val; },
+	get friction() 	        { return this._b2body.friction; },
+	set friction(val)       { this._b2body.friction = val; },
+	get restitution()       { return this._b2body.restitution; },
+	set restitution(val)    { this._b2body.restitution = val; },
+	_isStatic: true,
 
-    constructor: function (sprite, world, timer) {
-        this.sprite = sprite;
-        this.world = world;
-        this.timer = timer;
-        this.onFrame = Function2.bind(this.onFrame, this);
-
-        var bodyDef = new Box2D.Dynamics.b2BodyDef();
-        bodyDef.type = Box2D.Dynamics.b2Body.b2_dynamicBody;
-        bodyDef.position.x = (this.sprite.x + this.sprite.width / 2) / this.RATIO;
-        bodyDef.position.y = (this.sprite.y + this.sprite.height / 2) / this.RATIO;
-
-        var fixtureDef = new Box2D.Dynamics.b2FixtureDef();
-        fixtureDef.density = 0.1;
-        fixtureDef.friction = 0.5;
-        fixtureDef.restitution = 0.9;
-        fixtureDef.shape = new Box2D.Collision.Shapes.b2CircleShape(this.width / 2 / this.RATIO);
-        //fixtureDef.shape.SetAsBox(this.width / 2 / this.RATIO, this.height / 2 / this.RATIO);
-
-        this.body = this.world.CreateBody(bodyDef);
-        this.body.CreateFixture(fixtureDef);
-
-        this.timer.addListener('frame', this.onFrame);
+    constructor: function (width, height, world) {
+        this.parent(width, height);
+		this.world = world;
+        
+        this.createBody();
     },
 
-    onFrame: function () {
-        this.sprite.x = this.body.GetPosition().x * this.RATIO;
-        this.sprite.y = this.body.GetPosition().y * this.RATIO;
-        this.sprite.angle = this.body.GetAngle();
-    }
+	createBody: function() {
+		var bodyDef = new Box2D.Dynamics.b2BodyDef();
+        bodyDef.type = Box2D.Dynamics.b2Body.b2_staticBody;
+		
+        var fixtureDef = new Box2D.Dynamics.b2FixtureDef();
+        fixtureDef.density = 0.5;
+        fixtureDef.friction = 0.5;
+        fixtureDef.restitution = 0.5;
+    	fixtureDef.shape = new b2PolygonShape();
+        //fixtureDef.shape = new Box2D.Collision.Shapes.b2CircleShape(this.width / 2 / this.RATIO);
+        fixtureDef.shape.SetAsBox(this.width / 2 / this.world.ratio, this.height / 2 / this.world.ratio);
+
+        this._b2body = this.world._b2world.CreateBody(bodyDef);
+        this._b2body.CreateFixture(fixtureDef);
+	}
 });
 
 var Box = Sprite.extend({
@@ -257,18 +255,23 @@ var Box = Sprite.extend({
     }
 });
 
+var PBox = PSprite.extend({
+    constructor: function (width, height, world) {
+        this.base(width, height, timer);
+        this.ctx.fillStyle = 'rgba(255, 0, 0, 128)';
+        this.ctx.fillRect(0, 0, this.width, this.height);
+    }
+});
+
 var FrameTimer = EventTarget.extend({
     _timer: null,
     _stats: null,
 
     settings: null,
-    defaults: {
-        fps: 25
-    },
+    fps: 25,
 
-    constructor: function(options) {
-        options = options || {};
-        this.settings = new Base(this.defaults).extend(options);
+    constructor: function(fps) {
+        this.fps = fps || this.fps;
     },
 
     start: function () {
@@ -283,7 +286,7 @@ var FrameTimer = EventTarget.extend({
         this._timer = window.setInterval(function () {
             that.fire('frame');
             frame++;
-        }, 1000 / this.settings.fps);
+        }, 1000 / this.fps);
     },
 
     stop: function () {
