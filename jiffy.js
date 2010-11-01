@@ -196,7 +196,7 @@ var World = Class.$extend({
   },
 
   onFrame: function () {
-    this._world.Step(1 / this._timer.fps, 8, 8, true);
+    this._world.Step(1 / this._timer.fps, 6, 2, true);
     this._world.ClearForces();
   },
 
@@ -237,9 +237,9 @@ var PSprite = Sprite.$extend({
     bodyDef.type = isStatic ? Box2D.Dynamics.b2Body.b2_staticBody : Box2D.Dynamics.b2Body.b2_dynamicBody;
 
     var fixtureDef = new Box2D.Dynamics.b2FixtureDef();
-    fixtureDef.density = 0.5;
-    fixtureDef.friction = 0.2;
-    fixtureDef.restitution = 0.2;
+    fixtureDef.density = 0.8;
+    fixtureDef.friction = 0.1;
+    fixtureDef.restitution = 0.1;
   	fixtureDef.shape = new Box2D.Collision.Shapes.b2PolygonShape();
     //fixtureDef.shape = new Box2D.Collision.Shapes.b2CircleShape(this.width / 2 / this.RATIO);
     fixtureDef.shape.SetAsBox(this.width / 2 / this.world.ratio, this.height / 2 / this.world.ratio);
@@ -276,7 +276,7 @@ var FrameTimer = EventTarget.$extend({
 
   __init__: function(fps, useStats) {
     this.fps = fps || this.fps;
-    this._useStats = useStats || false;
+    this._useStats = useStats || this._useStats;
   },
 
   start: function () {
