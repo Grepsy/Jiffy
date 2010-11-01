@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+  <title>Quicktest</title>
+  <script src="lib/classy.js"></script>
+  <script>
+    var Coder = Class.$extend({
+      name: "coder",
+      _lines: 20,
+      get lines() { return this._lines; },
+      set lines(val) { this._lines = val; }
+    });
+
+    var Monkey = Coder.$extend({
+      name: "monkey",
+      get fake() { console.log("Property called instead of extended :("); },
+      get lines() {
+        return this.$super() * 2;
+      }
+    });
+
+    var coder = new Coder();
+    var monkey = new Monkey();
+
+    fireunit.compare(20, coder.lines, "Coder should have 20 lines");
+    fireunit.compare(40, monkey.lines, "Monkey should have 40 lines");
+  </script>
+</head>
+<body>
+  <div id="demo"></div>
+</body>
+</html>
