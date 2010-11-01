@@ -1,5 +1,5 @@
 function demo() {
-  var timer = new FrameTimer(25);
+  var timer = new Timer();
   var ele = document.getElementById('demo');
   var debug = document.getElementById('demo-debug');
 
@@ -19,7 +19,7 @@ function demo() {
   window.setInterval(function() {
     var box = new PBox(Math.random() * 250, Math.random() * 20, 20, 20, world, false);
     display.add(box);
-  }, 300);
+  }, 400);
 
   timer.start();
 }

@@ -1,5 +1,5 @@
 function demo() {
-  var timer = new FrameTimer();
+  var timer = new Timer();
   var ele = document.getElementById('demo');
   var display = new Display(ele, 256, 64, timer);
 
