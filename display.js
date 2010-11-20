@@ -13,7 +13,7 @@ var Display = Sprite.$extend({
   },
 
   onFrame: function () {
-    this.ctx.clearRect(0, 0, this.width, this.height);
+    this.ctx.fillRect(0, 0, this.width, this.height);
     for (var i = 0, e = this.children.length; i < e; i++) {
       this.draw(this.children[i]);
     }

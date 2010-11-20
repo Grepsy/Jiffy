@@ -48,7 +48,8 @@ var Animation = Sprite.$extend({
 
   onAnimationLoaded: function () {
 		console.log('Animation loaded', this.image);
-    this.frames = (this.image.width * this.image.height) / (this.width * this.height);
+    this.frames = Math.ceil((this.image.width * this.image.height) / (this.width * this.height));
+    console.log(this.frames);
     this.start();
   },
 
