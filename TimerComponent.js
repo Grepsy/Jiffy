@@ -1,36 +1,38 @@
-var Timer = EventTarget.$extend({
+var TimerComponent = Component.$extend({
   _timer: null,
   _stats: null,
-  _useStats: false,
+  _logFps: false,
 
+  type: 'timer',
+  frame: 0,
   fps: 25,
 
-  __init__: function(fps, useStats) {
+  __init__: function(fps, logFps) {
     this.fps = fps || this.fps;
-    this._useStats = useStats || this._useStats;
+    this._logFps = logFps || this._logFps;
   },
 
   start: function () {
-    var frame = 0,
-			that = this;
-
-    if (this._useStats) {
-      this._stats = window.setInterval(function () {
-        console.log('FPS: ', frame);
-        frame = 0;
-      }, 1000);
+    if (this._logFps) {
+      this._stats = window.setInterval(bind(this.onStats, this), 1000);
     }
 
-    this._timer = window.setInterval(function () {
-      that.fire('frame');
-      frame++;
-    }, 1000 / this.fps);
+    this._timer = window.setInterval(bind(this.onFrame, this), 1000 / this.fps);
   },
 
   stop: function () {
     window.clearInterval(this._timer);
-    if (this._useStats) {
+    if (this._logFps) {
       window.clearInterval(this._stats);
     }
+  },
+
+  onFrame: function () {
+    this.container.fire('frame');
+    this.frame++;
+  },
+
+  onStats: function() {
+    console.log('FPS: ', this.frame);
   }
 });

@@ -1,27 +1,26 @@
 function demo() {
-  var timer = new Timer();
   var ele = document.getElementById('demo');
   var debug = document.getElementById('demo-debug');
 
-  var world = new World(timer);
-  var display = new Display(ele, 300, 300, timer);
+  var timer = new TimerComponent(0.2);
+  var world = new WorldComponent();
+  var display = new DisplayComponent(ele);
   //world.debug(debug);
 
-  var ground = new PBox(0, 290, 300, 10, world, true);
-  var wall = new PBox(0, 0, 10, 300, world, true);
-  display.add(ground);
-  display.add(wall);
+  var ground = new GameObject(new PositionComponent(0, 190), new SizeComponent(300, 10), new BoxComponent(), new PhysicsComponent(world, true));
+  var wall = new GameObject(new PositionComponent(0, 0), new SizeComponent(10, 300), new BoxComponent(), new PhysicsComponent(world, true));
 
-  box = new PBox(140, 20, 40, 40, world, false);
-  box.angle = 2;
-  display.add(box);
+  demo = new GameObject(display, world, timer);
+  demo.add(ground);
+  demo.add(wall);
 
-  window.setInterval(function() {
-    var box = new PBox(Math.random() * 250, Math.random() * 20, 20, 20, world, false);
-    display.add(box);
-  }, 400);
+  // window.setInterval(function() {
+    var box = new GameObject(new PositionComponent(Math.random() * 250, Math.random() * 20), new SizeComponent(20, 20), new BoxComponent(), new PhysicsComponent(world, false))
+    demo.add(box);
+  // }, 400);
 
   timer.start();
+  //timer.onFrame();
 }
 
 window.addEventListener('load', demo, false);

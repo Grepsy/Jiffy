@@ -1,13 +1,12 @@
-var Animation = Sprite.$extend({
+var AnimationComponent = SpriteComponent.$extend({
   frame: 0,
   image: null,
   frames: 0,
   looping: true,
   running: false,
 
-  __init__: function (imageurl, width, height, timer) {
+  __init__: function (imageurl, width, height) {
     this.$super(width, height);
-		this.timer = timer;
     this.onFrame = bind(this.onFrame, this);
     this.onAnimationLoaded = bind(this.onAnimationLoaded, this);
 
@@ -19,7 +18,7 @@ var Animation = Sprite.$extend({
   start: function () {
     if (this.running) return;
     if (this.display) {
-      this.timer.addListener('frame', this.onFrame);
+      this.container.addListener('frame', this.onFrame);
     }
     this.running = true;
   },
@@ -27,7 +26,7 @@ var Animation = Sprite.$extend({
   stop: function () {
     if (!this.running) return;
     if (this.display) {
-      this.timer.removeListener('frame', this.onFrame);
+      this.container.removeListener('frame', this.onFrame);
     }
     this.running = false;
   },
@@ -35,14 +34,14 @@ var Animation = Sprite.$extend({
   // override
   onAdded: function () {
     if (this.running) {
-      this.display.addListener('frame', this.onFrame);
+      this.container.addListener('frame', this.onFrame);
     }
   },
 
   // override
   onRemoving: function () {
     if (this.running) {
-      this.display.removeListener('frame', this.onFrame);
+      this.container.removeListener('frame', this.onFrame);
     }
   },
 
