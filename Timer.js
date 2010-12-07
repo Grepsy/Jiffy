@@ -1,9 +1,8 @@
-var TimerComponent = Component.$extend({
+var Timer = EventTarget.$extend({
   _timer: null,
   _stats: null,
   _logFps: false,
 
-  type: 'timer',
   frame: 0,
   fps: 25,
 
@@ -28,7 +27,7 @@ var TimerComponent = Component.$extend({
   },
 
   onFrame: function () {
-    this.container.fire('frame');
+    this.fire('frame');
     this.frame++;
   },
 

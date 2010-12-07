@@ -1,14 +1,17 @@
 var GameObject = EventTarget.$extend({
+  id: null,
   components: null,
   angle: 0,
   parent: null,
   children: null,
 
-  __init__: function() {
-    if (arguments.length < 1)
-      throw "Need at least one component to initialize game object.";
+  __init__: function(id) {
+    if (arguments.length < 2)
+      throw "Need at least one ID and one component to initialize game object.";
 
-    this.components = arguments;
+    this.id = id;
+    this.components = Array.prototype.slice.call(arguments);
+    this.components.shift(1);
     for (var i = 0; i < this.components.length; i++) {
       this.components[i].container = this;
     }
@@ -16,6 +19,8 @@ var GameObject = EventTarget.$extend({
       this.components[i].onReady();
     }
     this.children = [];
+
+    log('Created GO ID: ' + id + ' with ' + this.components.length + ' components.');
   },
 
   getComponent: function(type) {

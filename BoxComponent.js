@@ -2,6 +2,7 @@ var BoxComponent = SpriteComponent.$extend({
   onReady: function() {
     this.container.addListener('sizeChanged', bind(this.onSizeChanged, this));
     this.size = this.container.getComponent('size');
+    this.draw();
   },
 
   draw: function() {
@@ -13,7 +14,7 @@ var BoxComponent = SpriteComponent.$extend({
   },
 
   onSizeChanged: function() {
-    log(this, 'Container changed size, resetting canvas.');
+    log(this, 'GameObject changed size, resetting canvas.');
     this.ctx.canvas.width = this.size.width;
     this.ctx.canvas.height = this.size.height;
     this.draw();

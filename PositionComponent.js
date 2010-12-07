@@ -9,9 +9,10 @@ var PositionComponent = Component.$extend({
   },
 
   onReady: function () {
-    this.container.addListener('setPosition', function(x, y) {
-      this.x = x;
-      this.y = y;
-    });
+    this.container.addListener('setPosition', bind(function(event) {
+      this.x = event.x;
+      this.y = event.y;
+      log(this.container, this.x, this.y)
+    }, this));
   }
 });

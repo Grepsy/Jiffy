@@ -12,7 +12,11 @@ var SizeComponent = Component.$extend({
     this.container.addListener('setSize', function(w, h) {
       this.width = w;
       this.height = h;
-      this.container.fire('sizeChanged');
+      this.container.fire({
+        type:'sizeChanged',
+        width: this.width,
+        height: this.height
+      });
     });
   }
 });
